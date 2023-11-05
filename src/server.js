@@ -17,8 +17,12 @@ const handleListen = () => console.log(`Listening on http://localhost:3000`);
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
+const sockets = [];
+
 function handleMessage(message) {
-  console.log(message.toString("utf8"));
+  const msg = message.toString("utf8");
+  console.log(msg);
+  sockets.forEach((socket) => socket.send(msg));
 }
 
 function handleClose() {
@@ -27,6 +31,7 @@ function handleClose() {
 
 function handleConnection(socket) {
   console.log("Connected to Browser");
+  sockets.push(socket);
   socket.on("close", handleClose);
   socket.on("message", handleMessage);
   socket.send("hello from the server");
