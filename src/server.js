@@ -34,7 +34,6 @@ function handleConnection(socket) {
   sockets.push(socket);
   socket.on("close", handleClose);
   socket.on("message", handleMessage);
-  socket.send("hello from the server");
 }
 
 wss.on("connection", handleConnection);
