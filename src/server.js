@@ -2,6 +2,7 @@ import express from "express";
 import path from "path";
 import WebSocket, { WebSocketServer } from "ws";
 import http from "http";
+import { Server } from "socket.io";
 
 const app = express();
 const __dirname = path.resolve();
@@ -12,7 +13,17 @@ app.use("/public", express.static(__dirname + "/src/public"));
 app.get("/", (req, res) => res.render("home"));
 app.get("/*", (req, res) => res.redirect("/"));
 
+const httpServer = http.createServer(app);
+const wsServer = new Server(httpServer);
+
+wsServer.on("connection", (socket) => {
+  console.log(socket);
+});
+
 const handleListen = () => console.log(`Listening on http://localhost:3000`);
+httpServer.listen(3000, handleListen);
+
+/* const handleListen = () => console.log(`Listening on http://localhost:3000`);
 
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
@@ -43,4 +54,4 @@ function handleConnection(socket) {
 
 wss.on("connection", handleConnection);
 
-server.listen(3000, handleListen);
+server.listen(3000, handleListen); */
