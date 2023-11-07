@@ -19,12 +19,6 @@ const wss = new WebSocketServer({ server });
 
 const sockets = [];
 
-function handleMessage(message) {
-  const msg = message.toString("utf8");
-  console.log(msg);
-  sockets.forEach((socket) => socket.send(msg));
-}
-
 function handleClose() {
   console.log("Disconnected from the Browser");
 }
@@ -32,8 +26,19 @@ function handleClose() {
 function handleConnection(socket) {
   console.log("Connected to Browser");
   sockets.push(socket);
+  socket["nickname"] = "Anonymous";
   socket.on("close", handleClose);
-  socket.on("message", handleMessage);
+  socket.on("message", (msg) => {
+    const message = JSON.parse(msg);
+    switch (message.type) {
+      case "message":
+        sockets.forEach((asocket) =>
+          asocket.send(`${socket.nickname}: ${message.payload}`)
+        );
+      case "nickname":
+        socket["nickname"] = message.payload;
+    }
+  });
 }
 
 wss.on("connection", handleConnection);
