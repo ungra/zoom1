@@ -17,10 +17,10 @@ const httpServer = http.createServer(app);
 const wsServer = new Server(httpServer);
 
 wsServer.on("connection", (socket) => {
-  socket.on("enter_room", (msg, fn) => {
-    console.log(msg);
+  socket.on("enter_room", (roomName, fn) => {
+    console.log(roomName);
     setTimeout(() => {
-      fn();
+      fn("hello from the backend");
     }, 5000);
   });
 });
