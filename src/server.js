@@ -17,7 +17,12 @@ const httpServer = http.createServer(app);
 const wsServer = new Server(httpServer);
 
 wsServer.on("connection", (socket) => {
-  console.log(socket);
+  socket.on("enter_room", (msg, fn) => {
+    console.log(msg);
+    setTimeout(() => {
+      fn();
+    }, 5000);
+  });
 });
 
 const handleListen = () => console.log(`Listening on http://localhost:3000`);
@@ -34,7 +39,7 @@ function handleClose() {
   console.log("Disconnected from the Browser");
 }
 
-function handleConnection(socket) {
+function handleConnection(socket)ㅌ {
   console.log("Connected to Browser");
   sockets.push(socket);
   socket["nickname"] = "Anonymous";
