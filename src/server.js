@@ -1,6 +1,7 @@
 import express from "express";
 import path from "path";
-import WebSocket, { WebSocketServer } from "ws";
+//import WebSocket, { WebSocketServer } from "ws";
+import SocketIO from "socket.io";
 import http from "http";
 import { Server } from "socket.io";
 
@@ -14,6 +15,7 @@ app.get("/", (req, res) => res.render("home"));
 app.get("/*", (req, res) => res.redirect("/"));
 
 const httpServer = http.createServer(app);
+<<<<<<< HEAD
 const wsServer = new Server(httpServer);
 
 wsServer.on("connection", (socket) => {
@@ -29,11 +31,20 @@ wsServer.on("connection", (socket) => {
 const handleListen = () => console.log(`Listening on http://localhost:3000`);
 httpServer.listen(3000, handleListen);
 
-/* const handleListen = () => console.log(`Listening on http://localhost:3000`);
+const io = SocketIO(httpServer);
 
-const server = http.createServer(app);
-const wss = new WebSocketServer({ server });
+io.on("connection", (socket) => {
+  socket.on("enter_room", (roomName, done) => {
+    console.log(roomName);
+    setTimeout(() => {
+      done("hello from the backend");
+    }, 5000);
+  });
+});
 
+//const wss = new WebSocketServer({ server });
+
+/*
 const sockets = [];
 
 function handleClose() {
@@ -47,17 +58,18 @@ function handleConnection(socket)ㅌ {
   socket.on("close", handleClose);
   socket.on("message", (msg) => {
     const message = JSON.parse(msg);
-    switch (message.type) {
-      case "message":
-        sockets.forEach((asocket) =>
-          asocket.send(`${socket.nickname}: ${message.payload}`)
-        );
-      case "nickname":
-        socket["nickname"] = message.payload;
+    console.log(message);
+    console.log(`${socket.nickname}`);
+    console.log(sockets.length);
+    if (message.type === "message") {
+      sockets.forEach((asocket) =>
+        asocket.send(`${socket.nickname}: ${message.payload}`)
+      );
+    } else if (message.type === "nickname") {
+      socket["nickname"] = message.payload;
     }
   });
 }
-
-wss.on("connection", handleConnection);
-
-server.listen(3000, handleListen); */
+*/
+const handleListen = () => console.log(`Listening on http://localhost:3000`);
+httpServer.listen(3000, handleListen);
