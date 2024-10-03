@@ -21,8 +21,9 @@ io.on("connection", (socket) => {
     console.log(`Socket Event: ${event}`);
   });
   socket.on("enter_room", (roomName, cb) => {
-    console.log(roomName);
+    socket.join(roomName);
     cb();
+    socket.to(roomName).emit("welcome");
   });
 });
 

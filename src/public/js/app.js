@@ -8,6 +8,13 @@ room.hidden = true;
 
 let roomName;
 
+function addMessage(msg) {
+  const ul = room.querySelector("ul");
+  const li = document.createElement("li");
+  li.innerText = msg;
+  ul.appendChild(li);
+}
+
 function showRoom() {
   welcome.hidden = true;
   room.hidden = false;
@@ -18,15 +25,16 @@ function showRoom() {
 function handleRoomSubmit(event) {
   event.preventDefault();
   const input = form.querySelector("input");
-  console.log(roomName);
   socket.emit("enter_room", input.value, showRoom);
-  console.log(roomName);
   roomName = input.value;
-  console.log(roomName);
   input.value = "";
 }
 
 form.addEventListener("submit", handleRoomSubmit);
+
+socket.on("welcome", () => {
+  addMessage("Someone joined!");
+});
 
 //socket.io vs websocket
 //1) 어떤 event라도 보낼 수 있다.
