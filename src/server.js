@@ -25,6 +25,13 @@ io.on("connection", (socket) => {
     cb();
     socket.to(roomName).emit("welcome");
   });
+  socket.on("new_message_from_client", (msg, roomName, cb) => {
+    socket.to(roomName).emit("new_message_from_server", msg);
+    cb();
+  });
+  socket.on("disconnecting", () => {
+    socket.rooms.forEach((room) => socket.to(room).emit("bye"));
+  });
 });
 
 //const wss = new WebSocketServer({ server });
