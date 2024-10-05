@@ -3,6 +3,7 @@ import path from "path";
 //import WebSocket, { WebSocketServer } from "ws";
 import { Server } from "socket.io";
 import http from "http";
+import { instrument } from "@socket.io/admin-ui";
 
 const app = express();
 const __dirname = path.resolve();
@@ -14,7 +15,17 @@ app.get("/", (req, res) => res.render("home"));
 app.get("/*", (req, res) => res.redirect("/"));
 
 const httpServer = http.createServer(app);
-const io = new Server(httpServer);
+const io = new Server(httpServer, {
+  cors: {
+    origin: ["https://admin.socket.io"],
+    credentials: true,
+  },
+});
+
+instrument(io, {
+  auth: false,
+  mode: "development",
+});
 
 io.on("connection", (socket) => {
   socket["nickname"] = "Anonymous";
