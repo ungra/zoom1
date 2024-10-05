@@ -18,6 +18,7 @@ const io = new Server(httpServer);
 
 io.on("connection", (socket) => {
   socket["nickname"] = "Anonymous";
+  io.sockets.emit("room_change", publicRooms());
   socket.onAny((event) => {
     console.log(`Socket Event: ${event}`);
   });
@@ -25,6 +26,7 @@ io.on("connection", (socket) => {
     socket.join(roomName);
     cb();
     socket.to(roomName).emit("welcome", socket.nickname);
+    io.sockets.emit("room_change", publicRooms());
   });
   socket.on("new_message_from_client", (msg, roomName, cb) => {
     socket
@@ -37,6 +39,9 @@ io.on("connection", (socket) => {
       socket.to(room).emit("bye", socket.nickname)
     );
   });
+  socket.on("disconnect", () => {
+    io.sockets.emit("room_change", publicRooms());
+  });
   socket.on("nickname", (nickname) => {
     socket["nickname"] = nickname;
   });
@@ -44,7 +49,7 @@ io.on("connection", (socket) => {
 
 function publicRooms() {
   const {
-    socket: {
+    sockets: {
       adapter: { sids, rooms },
     },
   } = io;

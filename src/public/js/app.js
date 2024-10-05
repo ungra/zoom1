@@ -62,6 +62,20 @@ socket.on("bye", (nickname) => {
   addMessage(`${nickname} left!!`);
 });
 
+socket.on("room_change", (rooms) => {
+  const roomList = welcome.querySelector("ul");
+  console.log(rooms);
+  roomList.innerHTML = "";
+  if (rooms.length === 0) {
+    return;
+  }
+  rooms.forEach((room) => {
+    const li = document.createElement("li");
+    li.innerText = room;
+    roomList.appendChild(li);
+  });
+});
+
 //socket.io vs websocket
 //1) 어떤 event라도 보낼 수 있다.
 //2) javascript object도 전송할 수 있다
