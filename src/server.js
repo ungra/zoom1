@@ -42,6 +42,21 @@ io.on("connection", (socket) => {
   });
 });
 
+function publicRooms() {
+  const {
+    socket: {
+      adapter: { sids, rooms },
+    },
+  } = io;
+  const publicRooms = [];
+  rooms.forEach((value, key) => {
+    if (sids.get(key) === undefined) {
+      publicRooms.push(key);
+    }
+  });
+  return publicRooms;
+}
+
 //const wss = new WebSocketServer({ server });
 
 /*
