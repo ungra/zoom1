@@ -24,8 +24,8 @@ io.on("connection", (socket) => {
   });
   socket.on("enter_room", (roomName, cb) => {
     socket.join(roomName);
-    cb();
-    socket.to(roomName).emit("welcome", socket.nickname);
+    cb(countRoom(roomName));
+    socket.to(roomName).emit("welcome", socket.nickname, countRoom(roomName));
     io.sockets.emit("room_change", publicRooms());
   });
   socket.on("new_message_from_client", (msg, roomName, cb) => {
@@ -36,7 +36,7 @@ io.on("connection", (socket) => {
   });
   socket.on("disconnecting", () => {
     socket.rooms.forEach((room) =>
-      socket.to(room).emit("bye", socket.nickname)
+      socket.to(room).emit("bye", socket.nickname, countRoom(room) - 1)
     );
   });
   socket.on("disconnect", () => {
@@ -60,6 +60,11 @@ function publicRooms() {
     }
   });
   return publicRooms;
+}
+
+function countRoom(roomName) {
+  console.log(io.sockets.adapter.rooms.get(roomName)?.size);
+  return io.sockets.adapter.rooms.get(roomName)?.size;
 }
 
 //const wss = new WebSocketServer({ server });
