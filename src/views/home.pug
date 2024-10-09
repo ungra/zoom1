@@ -15,6 +15,10 @@ html(lang="en")
         header 
             h1 Zoom
         main
+            div#welcome
+                form
+                    input(placeholder="Room Name", required, type="text")
+                    button Enter Room
             div#myStream
                 video#myFace(autoplay, playsinline, width="400", height="400")
                 button#mute Mute

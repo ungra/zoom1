@@ -1,15 +1,21 @@
 const socket = io();
 
+//stream
+
 const myFace = document.getElementById("myFace");
 const muteBtn = document.getElementById("mute");
 const cameraBtn = document.getElementById("camera");
 const cameraSelect = document.getElementById("cameras");
 const audioSelect = document.getElementById("audios");
+const stream = document.getElementById("myStream");
+
+stream.hidden = true;
 
 let myStream;
 let muted = false;
 let cameraOff = false;
 let devices;
+let roomName;
 
 function getCameras() {
   const cameras = devices.filter((device) => device.kind === "videoinput");
@@ -65,8 +71,6 @@ async function getMedia(cameraId, audioId) {
   }
 }
 
-getMedia();
-
 function handleMuteBtnClick() {
   myStream.getAudioTracks().forEach((track) => {
     track.enabled = !track.enabled;
@@ -109,3 +113,30 @@ audioSelect.addEventListener("input", handleAudioChange);
 //1) 어떤 event라도 보낼 수 있다.
 //2) javascript object도 전송할 수 있다
 //3) 여러가지 type의 data를 여러개 동시에 보낼 수 있음.
+
+//welcome
+
+const welcome = document.getElementById("welcome");
+const welcomeForm = welcome.querySelector("form");
+
+function startMedia() {
+  welcome.hidden = true;
+  stream.hidden = false;
+  getMedia();
+}
+
+function handleWelcomSubmit(event) {
+  event.preventDefault();
+  const input = welcomeForm.querySelector("input");
+  socket.emit("join_room", input.value, startMedia);
+  roomName = input.value;
+  input.value = "";
+}
+
+welcomeForm.addEventListener("submit", handleWelcomSubmit);
+
+//socket
+
+socket.on("welcome", () => {
+  console.log("someone joined");
+});

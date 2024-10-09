@@ -27,5 +27,13 @@ instrument(io, {
   mode: "development",
 });
 
+io.on("connection", (socket) => {
+  socket.on("join_room", (roomName, cb) => {
+    socket.join(roomName);
+    cb();
+    socket.to(roomName).emit("welcome");
+  });
+});
+
 const handleListen = () => console.log(`Listening on http://localhost:3000`);
 httpServer.listen(3000, handleListen);
