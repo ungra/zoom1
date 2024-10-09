@@ -33,6 +33,9 @@ io.on("connection", (socket) => {
     cb();
     socket.to(roomName).emit("welcome");
   });
+  socket.on("offer_from_client", (offer, roomName) => {
+    socket.to(roomName).emit("offer_from_server", offer);
+  });
 });
 
 const handleListen = () => console.log(`Listening on http://localhost:3000`);
