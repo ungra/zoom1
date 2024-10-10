@@ -28,13 +28,15 @@ instrument(io, {
 });
 
 io.on("connection", (socket) => {
-  socket.on("join_room", (roomName, cb) => {
+  socket.on("join_room", (roomName) => {
     socket.join(roomName);
-    cb();
     socket.to(roomName).emit("welcome");
   });
   socket.on("offer_from_client", (offer, roomName) => {
     socket.to(roomName).emit("offer_from_server", offer);
+  });
+  socket.on("answer_from_client", (answer, roomName) => {
+    socket.to(roomName).emit("answer_from_server", answer);
   });
 });
 

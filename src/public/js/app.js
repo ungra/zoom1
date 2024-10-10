@@ -122,17 +122,18 @@ const welcomeForm = welcome.querySelector("form");
 
 welcome.hidden = false;
 
-async function startMedia() {
+async function initCall() {
   welcome.hidden = true;
   stream.hidden = false;
   await getMedia();
   makeConnection();
 }
 
-function handleWelcomSubmit(event) {
+async function handleWelcomSubmit(event) {
   event.preventDefault();
   const input = welcomeForm.querySelector("input");
-  socket.emit("join_room", input.value, startMedia);
+  await initCall();
+  socket.emit("join_room", input.value);
   roomName = input.value;
   input.value = "";
 }
@@ -149,8 +150,15 @@ socket.on("welcome", async () => {
   socket.emit("offer_from_client", offer, roomName);
 });
 
-socket.on("offer_from_server", (offer) => {
-  console.log(offer);
+socket.on("offer_from_server", async (offer) => {
+  myPeerConnection.setRemoteDescription(offer);
+  const answer = await myPeerConnection.createAnswer();
+  myPeerConnection.setLocalDescription(answer);
+  socket.emit("answer_from_client", answer, roomName);
+});
+
+socket.on("answer_from_server", (answer) => {
+  myPeerConnection.setRemoteDescription(answer);
 });
 
 //WebRTC code
