@@ -8,6 +8,7 @@ const cameraBtn = document.getElementById("camera");
 const cameraSelect = document.getElementById("cameras");
 const audioSelect = document.getElementById("audios");
 const stream = document.getElementById("myStream");
+const peerFace = document.getElementById("peerFace");
 
 stream.hidden = true;
 
@@ -151,21 +152,41 @@ socket.on("welcome", async () => {
 });
 
 socket.on("offer_from_server", async (offer) => {
+  console.log("received the offer");
   myPeerConnection.setRemoteDescription(offer);
   const answer = await myPeerConnection.createAnswer();
   myPeerConnection.setLocalDescription(answer);
+  console.log("sent the answer");
   socket.emit("answer_from_client", answer, roomName);
 });
 
 socket.on("answer_from_server", (answer) => {
+  console.log("received the answer");
   myPeerConnection.setRemoteDescription(answer);
+});
+
+socket.on("ice", (ice) => {
+  console.log("received the ice");
+  myPeerConnection.addIceCandidate(ice);
 });
 
 //WebRTC code
 
 function makeConnection() {
   myPeerConnection = new RTCPeerConnection();
+  myPeerConnection.addEventListener("icecandidate", handlerIce);
+  myPeerConnection.addEventListener("addstream", handleAddStream);
   myStream.getTracks().forEach((track) => {
     myPeerConnection.addTrack(track, myStream);
   });
+}
+
+function handlerIce(data) {
+  console.log("sent the ice");
+  socket.emit("ice", data.candidate, roomName);
+}
+
+function handleAddStream(data) {
+  console.log("add peerStream");
+  peerFace.srcObject = data.stream;
 }
