@@ -28,6 +28,9 @@ instrument(io, {
 });
 
 io.on("connection", (socket) => {
+  socket.onAny((event) => {
+    console.log(`Socket Event: ${event}`);
+  });
   socket.on("join_room", (roomName) => {
     socket.join(roomName);
     socket.to(roomName).emit("welcome");
@@ -40,6 +43,17 @@ io.on("connection", (socket) => {
   });
   socket.on("ice", (ice, roomName) => {
     socket.to(roomName).emit("ice", ice);
+  });
+  socket.on("disconnecting", () => {
+    console.log("disconnecting");
+    socket.rooms.forEach((room) => {
+      if (room !== socket.id) {
+        socket.to(room).emit("bye");
+      }
+    });
+  });
+  socket.on("disconnect", () => {
+    console.log("disconnect");
   });
 });
 

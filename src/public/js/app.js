@@ -1,5 +1,8 @@
 const socket = io();
 
+// localtunnel password
+// https://loca.lt/mytunnelpassword
+
 //stream
 
 const myFace = document.getElementById("myFace");
@@ -100,6 +103,13 @@ function handleCameraBtnClick() {
 
 async function handleCameraChange() {
   await getMedia(cameraSelect.value, audioSelect.value);
+  if (myPeerConnection) {
+    const videoTrack = myStream.getVideoTracks()[0];
+    const videoSender = myPeerConnection
+      .getSenders()
+      .find((sender) => sender.track.kind === "video");
+    videoSender.replaceTrack(videoTrack);
+  }
 }
 
 async function handleAudioChange() {
@@ -168,6 +178,11 @@ socket.on("answer_from_server", (answer) => {
 socket.on("ice", (ice) => {
   console.log("received the ice");
   myPeerConnection.addIceCandidate(ice);
+});
+
+socket.on("bye", () => {
+  console.log("someone left");
+  peerFace.srcObject = null;
 });
 
 //WebRTC code
